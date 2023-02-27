@@ -7,25 +7,28 @@ const fs = require("fs-extra");
 //         console.log(body);
 //     });
 
-(async () => {
-  const res = await fetch("https://www.hpe.com");
-  console.log("RES:");
-  console.log("<------------------->");
-  console.log(res);
-  console.log("HEADERS:");
-  console.log("<------------------->");
-  console.log(res.headers);
-  console.log("BODY:");
-  console.log("<------------------->");
-  const body = await res.text();
-  console.log(body);
-  console.log("END BODY:");
-  console.log("<------------------->");
-})();
+// (async () => {
+//   const res = await fetch("https://www.hpe.com");
+//   console.log("RES:");
+//   console.log("<------------------->");
+//   console.log(res);
+//   console.log("HEADERS:");
+//   console.log("<------------------->");
+//   console.log(res.headers);
+//   console.log("BODY:");
+//   console.log("<------------------->");
+//   const body = await res.text();
+//   console.log(body);
+//   console.log("END BODY:");
+//   console.log("<------------------->");
+// })();
+
+const iLOIp = process.env.ILO_IP;
+console.log("iLO IP:", iLOIp);
 
 try {
   (async () => {
-    const res = await fetch("http://15.215.22.196/redfish/v1");
+    const res = await fetch(`https://${iLOIp}/redfish/v1`);
     console.log(res);
     console.log(res.headers);
     console.log("BODY:", res.body);
@@ -45,7 +48,7 @@ const data = { UserName: "Admin", Password: "Adminwtec" };
 try {
   (async () => {
     const res = await fetch(
-      "http://15.215.22.196/redfish/v1/SessionService/Sessions",
+      `https://${iLOIp}/redfish/v1/SessionService/Sessions`,
       {
         method: "POST",
         headers: {
@@ -61,11 +64,12 @@ try {
     console.log("BODY:", res.body);
     console.log("<------------------->");
     const json = await res.json();
+
     console.log(json);
 
     try {
       (async () => {
-        const res = await fetch("http://15.215.22.196/redfish/v1/Managers", {
+        const res = await fetch(`https://${iLOIp}/redfish/v1/Managers`, {
           headers: {
             "x-auth-token": xauth,
           },
@@ -77,6 +81,85 @@ try {
         const json = await res.json();
 
         console.log(json);
+      })();
+    } catch (e) {
+      console.log(e.message.ExtendedInfo);
+    }
+    try {
+      (async () => {
+        const res = await fetch(`https://${iLOIp}/redfish/v1/Managers/1`, {
+          headers: {
+            "x-auth-token": xauth,
+          },
+        });
+        console.log(res);
+        console.log(res.headers);
+        console.log("Here comes the json");
+        console.log("<------------------->");
+        const json = await res.json();
+
+        console.log(json);
+      })();
+    } catch (e) {
+      console.log(e.message.ExtendedInfo);
+    }
+    try {
+      (async () => {
+        const res = await fetch(
+          `https://${iLOIp}/redfish/v1/Managers/1/EthernetInterfaces`,
+          {
+            headers: {
+              "x-auth-token": xauth,
+            },
+          }
+        );
+        console.log(res);
+        console.log(res.headers);
+        console.log("Here comes the json");
+        console.log("<------------------->");
+        const json = await res.json();
+
+        console.log(json);
+      })();
+    } catch (e) {
+      console.log(e.message.ExtendedInfo);
+    }
+    try {
+      (async () => {
+        const res = await fetch(
+          `https://${iLOIp}/redfish/v1/systems/1/EthernetInterfaces`,
+          {
+            headers: {
+              "x-auth-token": xauth,
+            },
+          }
+        );
+        console.log(res);
+        console.log(res.headers);
+        console.log("Here comes the json");
+        console.log("<------------------->");
+        const json = await res.json();
+        const { Members } = json;
+        for (const member of Members) {
+          const { "@odata.id": id } = member;
+          try {
+            (async () => {
+              const res = await fetch(`https://${iLOIp}${id}`, {
+                headers: {
+                  "x-auth-token": xauth,
+                },
+              });
+
+              //console.log(res);
+              let Interfaces = await res.json();
+              console.log(`Here comes the json for Interface ${id}`);
+              console.log("<------------------->");
+              console.log(Interfaces);
+            })();
+          } catch (e) {
+            console.log(e.message.ExtendedInfo);
+          }
+        }
       })();
     } catch (e) {
       console.log(e.message.ExtendedInfo);
