@@ -164,6 +164,44 @@ try {
     } catch (e) {
       console.log(e.message.ExtendedInfo);
     }
+    try {
+      (async () => {
+        const res = await fetch(`https://${iLOIp}/redfish/v1/systems`, {
+          headers: {
+            "x-auth-token": xauth,
+          },
+        });
+        console.log(res);
+        console.log(res.headers);
+        console.log("Here comes the json data for systems");
+        console.log("<------------------->");
+        const json = await res.json();
+        console.log(json);
+        const { Members } = json;
+        for (const member of Members) {
+          const { "@odata.id": id } = member;
+          try {
+            (async () => {
+              const res = await fetch(`https://${iLOIp}${id}`, {
+                headers: {
+                  "x-auth-token": xauth,
+                },
+              });
+
+              //console.log(res);
+              let Interfaces = await res.json();
+              console.log(`Here comes the json for systems ${id}`);
+              console.log("<------------------->");
+              console.log(Interfaces);
+            })();
+          } catch (e) {
+            console.log(e.message.ExtendedInfo);
+          }
+        }
+      })();
+    } catch (e) {
+      console.log(e.message.ExtendedInfo);
+    }
   })();
 } catch (e) {
   console.log(e.message.ExtendedInfo);
