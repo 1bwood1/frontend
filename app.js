@@ -41,7 +41,7 @@ try {
     console.log("<------------------->");
   })();
 } catch (e) {
-  console.log(e);
+  console.log(e.message.ExtendedInfo);
 }
 
 const data = { UserName: "Admin", Password: "Adminwtec" };
@@ -76,7 +76,7 @@ try {
         });
         console.log(res);
         console.log(res.headers);
-        console.log("Here comes the json");
+        console.log("***** Here comes the Managers json *****");
         console.log("<------------------->");
         const json = await res.json();
 
@@ -115,10 +115,9 @@ try {
         );
         console.log(res);
         console.log(res.headers);
-        console.log("Here comes the json");
+        console.log("Here comes the json for Manager Network Interfaces");
         console.log("<------------------->");
         const json = await res.json();
-
         console.log(json);
       })();
     } catch (e) {
@@ -136,9 +135,10 @@ try {
         );
         console.log(res);
         console.log(res.headers);
-        console.log("Here comes the json");
+        console.log("Here comes the json for Systems Ethernet Interfaces");
         console.log("<------------------->");
         const json = await res.json();
+        console.log(json);
         const { Members } = json;
         for (const member of Members) {
           const { "@odata.id": id } = member;
